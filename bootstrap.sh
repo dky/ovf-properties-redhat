@@ -7,9 +7,10 @@ IP=`$VMTOOLSD --cmd "info-get guestinfo.ovfenv" | grep "ip" | grep "ip" | awk -F
 NETMASK=`$VMTOOLSD --cmd "info-get guestinfo.ovfenv" | grep "netmask" | grep "netmask" | awk -F'"' '{ print $4 }'`
 GATEWAY=`$VMTOOLSD --cmd "info-get guestinfo.ovfenv" | grep "gateway" | grep "gateway" | awk -F'"' '{ print $4 }'`
 
-NETWORK_TEMPLATE=./network.template
-IF_TEMPLATE=./ifcfg-eth0.template
-ISSUE_TEMPLATE=./issue.template
+TEMPLATE_DIR="/usr/local/bin/"
+NETWORK_TEMPLATE=$TEMPLATE_DIR/network.template
+IF_TEMPLATE=$TEMPLATE_DIR/ifcfg-eth0.template
+ISSUE_TEMPLATE=$TEMPLATE_DIR/issue.template
 
 NETWORK_FILE=/etc/sysconfig/network
 IF_ETH0=/etc/sysconfig/network-scripts/ifcfg-eth0
@@ -37,6 +38,19 @@ set_issue() {
         $ISSUE_TEMPLATE > $ISSUE_FILE
 }
 
-set_hostname
-set_network
+STATE=/tmp/.fsi_bootstrap.run
+
+if [ -f $STATE ];
+then 
+	echo "Don't run, looks like this already run"
+	exit
+else 
+	set_hostname
+	set_network
+	echo "Config files adjusted, reboot"
+	touch $STATE
+	reboot
+fi
+
+#Update /etc/issue
 set_issue
