@@ -1,0 +1,10 @@
+DEVICE="eth0"
+BOOTPROTO="static"
+IPV6INIT="yes"
+MTU="1500"
+NM_CONTROLLED="no"
+ONBOOT="yes"
+TYPE="Ethernet"
+%IP%
+%NETMASK%
+%GATEWAY%
